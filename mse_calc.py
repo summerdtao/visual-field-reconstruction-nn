@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 
-from src.settings import Settings
 
 def load_image(filename):
     return cv2.imread(filename, 0)
@@ -16,4 +15,3 @@ def compare_img(base_img, compare_img):
 
     mse = (1- np.square(base_flatten - comp_flatten)).mean()
     return mse
-

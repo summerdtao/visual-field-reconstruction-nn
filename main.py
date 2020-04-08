@@ -1,9 +1,9 @@
-from ml.models import model
+from models import model
 import os
 import torch
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
-from ml.dataset import EEGDataset
+from dataset import EEGDataset
 import numpy as np
 from sklearn.model_selection import ParameterGrid
 import cv2
@@ -13,9 +13,9 @@ from scipy import ndimage as ndi
 dimension = 0
 data = []
 labels = []
-data_dir = 'ml/datasets'
-saved_model_dir = 'ml/saved_model/'
-input = 'Kevin_8.5_panda_inv_resized_2_0_2650.csv'
+data_dir = 'datasets'
+saved_model_dir = 'saved_model/'
+input = 'panda_inv_1_0_2650.csv'
 bitmapping_threshold = 56
 mask_threshold = 10
 
@@ -50,7 +50,7 @@ def generate_prediction(filename, nn, shape, threshold=False, denoise=False):
                 if row[i] >= 2e+01:
                     row[i] = row[i] * 2
 
-    np.savetxt("ml/bitmapping.csv", pred_y)
+    np.savetxt("bitmapping.csv", pred_y)
     if threshold:
         processed_y = np.zeros(pred_y.shape)
         for i in range(len(pred_y)):
@@ -59,10 +59,10 @@ def generate_prediction(filename, nn, shape, threshold=False, denoise=False):
             else:
                 processed_y[i] = 0
         processed_y = np.reshape(processed_y, shape)
-        cv2.imwrite("ml/prediction_Kevin.png", processed_y)
+        cv2.imwrite("prediction.png", processed_y)
     else:
         pred_y = np.reshape(pred_y, shape)
-        cv2.imwrite("ml/prediction_Kevin.png", pred_y)
+        cv2.imwrite("prediction.png", pred_y)
 
 
 def weights_init_uniform(m):
@@ -143,9 +143,9 @@ def denoise(bitmapping, shape):
         for i in range(len(row)):
             if row[i] < 0:
                 row[i] = 0
-            # if row[i] < 10:
-            #     row[i] = row[i] / 2
-            if row[i] >= 0:
+            if row[i] < 10:
+                row[i] = row[i] / 2
+            if row[i] >= 10:
                 row[i] = row[i] * 2
 
     for i in range(1, shape[0]-1):
@@ -156,7 +156,7 @@ def denoise(bitmapping, shape):
             else:
                 y[i][j] = (y[i][j-1] + y[i][j+1]) / 2 + (y[i-1][j] + y[i+1][j])/10
 
-    cv2.imwrite("ml/processed_Kevin.png", y)
+    cv2.imwrite("processed.png", y)
 
 
 if __name__ == "__main__":
@@ -174,10 +174,9 @@ if __name__ == "__main__":
     predict_bitmapping(nn, weights='weights.pt', x=input, resulution=(50, 53),
                        threshold=False, denoise=False)
 
-    denoise('ml/bitmapping.csv', (50, 53))
+    denoise('bitmapping.csv', (50, 53))
 
     # result = mask('ml/prediction_Kevin.png', mask_threshold)
     # io.imshow(result)
     # plt.show()
-
-
+    

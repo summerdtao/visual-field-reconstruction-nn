@@ -6,7 +6,6 @@ from progress.bar import Bar
 from torch import optim
 import numpy as np
 import matplotlib.pyplot as plt
-from ml.misc import AverageMeter
 from torch.autograd import Variable
 
 fig_dir = "ml/plot"
@@ -103,83 +102,3 @@ def plot_tick_helper(loss):
         step = 1
     return start, end, step
 
-# def train_helper(batchloader, model, criterion, optimizer=None, penalty=None, test=False, use_cuda=False):
-#     # switch to train or evaluate mode
-#     if test:
-#         model.eval()
-#     else:
-#         model.train()
-#
-#     batch_time = AverageMeter()
-#     data_time = AverageMeter()
-#     losses = AverageMeter()
-#     end = time.time()
-#
-#     if test:
-#         bar = Bar('Testing', max=len(batchloader))
-#     else:
-#         bar = Bar('Training', max=len(batchloader))
-#
-#     print(batchloader)
-#     for batch_idx, (inputs, targets) in enumerate(batchloader):
-#         # measure data loading time
-#         data_time.update(time.time() - end)
-#
-#         if use_cuda:
-#             inputs = inputs.cuda()
-#             targets = targets.cuda()
-#
-#         inputs = Variable(inputs)
-#         targets = Variable(targets)
-#
-#         # compute output
-#         outputs = model(inputs)
-#
-#         # calculate loss
-#         loss = 0
-#         loss = loss + criterion(outputs, targets.double())
-#         if penalty is not None:
-#             loss = loss + penalty(model)
-#
-#         # record loss
-#         losses.update(loss.data.item(), inputs.size(0))
-#
-#         if not test:
-#             # compute gradient and do SGD step
-#             optimizer.zero_grad()
-#             loss.backward()
-#             optimizer.step()
-#
-#         # measure elapsed time
-#         batch_time.update(time.time() - end)
-#         end = time.time()
-#
-#         # plot progress
-#         bar.suffix = '({batch}/{size}) Data: {data:.3f}s | Batch: {bt:.3f}s | Total: {total:} | Loss: {loss:.4f}'.format(
-#             batch=batch_idx + 1,
-#             size=len(batchloader),
-#             data=data_time.avg,
-#             bt=batch_time.avg,
-#             total=bar.elapsed_td,
-#             loss=losses.avg)
-#         print(bar.suffix)
-#         bar.next()
-#
-#     bar.finish()
-#     return losses.avg
-#
-#
-# def train2(dataloader, model, data, labels, lr=0.01, weight_decay=1e-6, momentum=0.9, nesterov=False, max_epochs=10):
-#
-#     loss_function = torch.nn.MSELoss()
-#     optimizer = optim.SGD(model.parameters(), lr=lr, weight_decay=weight_decay, momentum=momentum, nesterov=nesterov)
-#
-#     for i in range(max_epochs):
-#         print("EPOCH: {0}".format(i + 1))
-#         train_helper(dataloader, model, loss_function, optimizer=optimizer)
-#
-#     while True:
-#         idx = int(input())
-#         print("TARGET: {0}".format(labels[idx]))
-#         value = torch.from_numpy(data[idx])
-#         print("ANSWER: {0}".format(model.forward(value).item()))
